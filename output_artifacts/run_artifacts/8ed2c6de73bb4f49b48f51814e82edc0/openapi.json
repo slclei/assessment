@@ -1,0 +1,176 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "URL Shortener API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000"
+    }
+  ],
+  "paths": {
+    "/shorten": {
+      "post": {
+        "operationId": "createShortUrl",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShortenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Short URL created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShortenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request."
+          },
+          "409": {
+            "description": "Custom alias already exists."
+          },
+          "413": {
+            "description": "Request body is too large."
+          },
+          "503": {
+            "description": "Short-code allocation failed."
+          }
+        }
+      }
+    },
+    "/{short_code}": {
+      "get": {
+        "operationId": "redirectShortUrl",
+        "parameters": [
+          {
+            "name": "short_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the original URL.",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Short URL not found."
+          }
+        }
+      }
+    },
+    "/analytics/{short_code}": {
+      "get": {
+        "operationId": "getShortUrlAnalytics",
+        "parameters": [
+          {
+            "name": "short_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Aggregate click analytics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClickAnalytics"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Short URL not found."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ShortenRequest": {
+        "type": "object",
+        "required": [
+          "long_url"
+        ],
+        "properties": {
+          "long_url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "custom_alias": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,32}$"
+          }
+        }
+      },
+      "ShortenResponse": {
+        "type": "object",
+        "required": [
+          "short_code",
+          "short_url"
+        ],
+        "properties": {
+          "short_code": {
+            "type": "string"
+          },
+          "short_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "ClickAnalytics": {
+        "type": "object",
+        "required": [
+          "short_code",
+          "click_count",
+          "last_clicked_at"
+        ],
+        "properties": {
+          "short_code": {
+            "type": "string"
+          },
+          "click_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last_clicked_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

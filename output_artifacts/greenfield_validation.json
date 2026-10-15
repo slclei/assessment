@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checks": [
+    "syntax",
+    "API specification",
+    "schema",
+    "shorten",
+    "unique codes",
+    "redirects",
+    "analytics",
+    "404"
+  ]
+}

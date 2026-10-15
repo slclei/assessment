@@ -1,0 +1,32 @@
+{
+  "raw_prompt": "Set the default lifetime to 7 days for new links in my URL shortener.",
+  "requirements": [
+    {
+      "id": "shorten_urls",
+      "description": "Create unique short codes for valid URLs.",
+      "supported": true
+    },
+    {
+      "id": "expiring_links",
+      "description": "Apply the normalized default link lifetime, allow shorter timezone-aware expirations, and reject redirects after expiry.",
+      "supported": true
+    },
+    {
+      "id": "redirect_urls",
+      "description": "Resolve known short codes to their destination URLs.",
+      "supported": true
+    }
+  ],
+  "constraints": {
+    "default_expiration_hours": 168,
+    "max_expiration_hours": 168
+  },
+  "unsupported_requirements": [],
+  "unresolved_questions": [
+    "What scale and service-level target should the first release support?"
+  ],
+  "assumptions": [
+    "Use a single-instance prototype target until scale requirements are clarified.",
+    "Use a 168-hour default lifetime and permit timezone-aware explicit expirations up to 168 hours."
+  ]
+}

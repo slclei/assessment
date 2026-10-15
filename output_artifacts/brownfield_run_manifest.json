@@ -1,0 +1,177 @@
+{
+  "run_id": "7520f0c0a1584367981c81c07d2dc35d",
+  "scenario": "Brownfield-URL-Shortener-Refactor",
+  "started_at": 1792097610.5305467,
+  "finished_at": 1792097610.553101,
+  "request": "Replace the vulnerable lookup_url SQL interpolation with a parameterized query.",
+  "normalized_requirements": [
+    "parameterized_lookup"
+  ],
+  "provider": null,
+  "inputs": {
+    "source_module": "D:\\LeiXU\\Job\\assignment\\agentic_sdlc_platform\\scenarios\\fixtures\\legacy_lookup.py",
+    "source_sha256": "f93765362934b958d8551f8b3736da3ddbd9aa93482e4fd424dd89185c7c348b"
+  },
+  "plan": [
+    {
+      "task_id": "77d658ef",
+      "name": "Parse and Audit Legacy Lookup",
+      "dependencies": []
+    },
+    {
+      "task_id": "fb898e1f",
+      "name": "Patch SQL Injection with Bound Parameters",
+      "dependencies": [
+        "77d658ef"
+      ]
+    },
+    {
+      "task_id": "b38866dc",
+      "name": "Compile and Verify Refactored Module",
+      "dependencies": [
+        "fb898e1f"
+      ]
+    }
+  ],
+  "approvals": [
+    {
+      "timestamp": 1792097610.5375834,
+      "run_id": "7520f0c0a1584367981c81c07d2dc35d",
+      "scenario": "Brownfield-URL-Shortener-Refactor",
+      "task_id": "fb898e1f",
+      "task_name": "Patch SQL Injection with Bound Parameters",
+      "status": "WAITING_APPROVAL",
+      "event": "PENDING_APPROVAL",
+      "details": "\n[GOVERNANCE GATE] Review and authorize 'Patch SQL Injection with Bound Parameters'.\nReplace only lookup_url with a parameterized short_code query; preserve the rest of the caller's module.\nCompleted prerequisites:\n- Parse and Audit Legacy Lookup: {'input_module': 'D:\\\\LeiXU\\\\Job\\\\assignment\\\\agentic_sdlc_platform\\\\scenarios\\\\fixtures\\\\legacy_lookup.py', 'parsed': True, 'findings': ['SQL injection risk: short_code is interpolated into SQL text.']}\nApprove? (y/n): "
+    },
+    {
+      "timestamp": 1792097610.5395832,
+      "run_id": "7520f0c0a1584367981c81c07d2dc35d",
+      "scenario": "Brownfield-URL-Shortener-Refactor",
+      "task_id": "fb898e1f",
+      "task_name": "Patch SQL Injection with Bound Parameters",
+      "status": "WAITING_APPROVAL",
+      "event": "APPROVED",
+      "details": "Operator approved after reviewing the recorded change summary."
+    }
+  ],
+  "task_trace": [
+    {
+      "task_id": "77d658ef",
+      "name": "Parse and Audit Legacy Lookup",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Replace the vulnerable lookup_url SQL interpolation with a parameterized query.",
+        "input_module": "D:\\LeiXU\\Job\\assignment\\agentic_sdlc_platform\\scenarios\\fixtures\\legacy_lookup.py",
+        "input_sha256": "f93765362934b958d8551f8b3736da3ddbd9aa93482e4fd424dd89185c7c348b"
+      },
+      "output": {
+        "input_module": "D:\\LeiXU\\Job\\assignment\\agentic_sdlc_platform\\scenarios\\fixtures\\legacy_lookup.py",
+        "parsed": true,
+        "findings": [
+          "SQL injection risk: short_code is interpolated into SQL text."
+        ]
+      },
+      "error": null
+    },
+    {
+      "task_id": "fb898e1f",
+      "name": "Patch SQL Injection with Bound Parameters",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Replace the vulnerable lookup_url SQL interpolation with a parameterized query.",
+        "input_module": "D:\\LeiXU\\Job\\assignment\\agentic_sdlc_platform\\scenarios\\fixtures\\legacy_lookup.py",
+        "input_sha256": "f93765362934b958d8551f8b3736da3ddbd9aa93482e4fd424dd89185c7c348b",
+        "legacy_source": "def lookup_url(connection, short_code):\n    query = f\"SELECT long_url FROM urls WHERE short_code = '{short_code}'\"\n    return connection.execute(query).fetchone()"
+      },
+      "output": {
+        "patched_module": "output_artifacts/secure_lookup.py",
+        "change": "Generated an isolated, parameterized lookup replacement."
+      },
+      "error": null
+    },
+    {
+      "task_id": "b38866dc",
+      "name": "Compile and Verify Refactored Module",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Replace the vulnerable lookup_url SQL interpolation with a parameterized query.",
+        "input_module": "D:\\LeiXU\\Job\\assignment\\agentic_sdlc_platform\\scenarios\\fixtures\\legacy_lookup.py",
+        "input_sha256": "f93765362934b958d8551f8b3736da3ddbd9aa93482e4fd424dd89185c7c348b",
+        "legacy_source": "def lookup_url(connection, short_code):\n    query = f\"SELECT long_url FROM urls WHERE short_code = '{short_code}'\"\n    return connection.execute(query).fetchone()"
+      },
+      "output": {
+        "passed": true,
+        "input_module": "D:\\LeiXU\\Job\\assignment\\agentic_sdlc_platform\\scenarios\\fixtures\\legacy_lookup.py",
+        "patched_module": "output_artifacts/secure_lookup.py",
+        "checks": [
+          "AST parse",
+          "Python compile",
+          "parameterized query",
+          "normal lookup",
+          "injection-shaped lookup rejected"
+        ]
+      },
+      "error": null
+    }
+  ],
+  "code_changes": [
+    {
+      "path": "secure_lookup.py",
+      "snapshot_path": "run_artifacts\\7520f0c0a1584367981c81c07d2dc35d\\secure_lookup.py",
+      "sha256": "4a11e392b04def58d99b0d8c4b217aea975e2d34d7ffd88836bc50750cf2e792"
+    }
+  ],
+  "test_results": [
+    {
+      "path": "brownfield_validation.json",
+      "result": {
+        "passed": true,
+        "input_module": "D:\\LeiXU\\Job\\assignment\\agentic_sdlc_platform\\scenarios\\fixtures\\legacy_lookup.py",
+        "patched_module": "output_artifacts/secure_lookup.py",
+        "checks": [
+          "AST parse",
+          "Python compile",
+          "parameterized query",
+          "normal lookup",
+          "injection-shaped lookup rejected"
+        ]
+      }
+    }
+  ],
+  "final_decision": {
+    "passed": true,
+    "success": true
+  },
+  "metrics": {
+    "run_id": "7520f0c0a1584367981c81c07d2dc35d",
+    "scenario": "Brownfield-URL-Shortener-Refactor",
+    "end_to_end_latency_sec": 0.0222,
+    "total_retries": 0,
+    "total_rollbacks": 0,
+    "mttr_sec": null,
+    "failure_timestamp": null,
+    "recovery_timestamp": null,
+    "success": true,
+    "recorded_runs": 1,
+    "successful_runs": 1,
+    "success_rate_percentage": 100.0
+  },
+  "artifacts": [
+    {
+      "path": "brownfield_validation.json",
+      "snapshot_path": "run_artifacts\\7520f0c0a1584367981c81c07d2dc35d\\brownfield_validation.json",
+      "sha256": "fd3664c5333324daecdf8c4bfe2077c8198625c6a2d09ae8d312863f4a4f86d9"
+    },
+    {
+      "path": "legacy_audit.json",
+      "snapshot_path": "run_artifacts\\7520f0c0a1584367981c81c07d2dc35d\\legacy_audit.json",
+      "sha256": "60e5d0f72279448ab77f9324033e5e87ff21776f66ded19c2ebff68539eed4eb"
+    },
+    {
+      "path": "secure_lookup.py",
+      "snapshot_path": "run_artifacts\\7520f0c0a1584367981c81c07d2dc35d\\secure_lookup.py",
+      "sha256": "4a11e392b04def58d99b0d8c4b217aea975e2d34d7ffd88836bc50750cf2e792"
+    }
+  ]
+}

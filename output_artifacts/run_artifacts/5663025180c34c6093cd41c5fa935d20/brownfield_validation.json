@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "input_module": "D:\\LeiXU\\Job\\assignment\\agentic_sdlc_platform\\scenarios\\fixtures\\legacy_lookup.py",
+  "patched_module": "output_artifacts/secure_lookup.py",
+  "checks": [
+    "AST parse",
+    "Python compile",
+    "parameterized query",
+    "normal lookup",
+    "injection-shaped lookup rejected"
+  ]
+}

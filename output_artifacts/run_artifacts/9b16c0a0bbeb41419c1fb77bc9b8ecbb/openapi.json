@@ -1,0 +1,1 @@
+{"service": "url-shortener", "endpoints": ["POST /shorten", "GET /{short_code}", "GET /analytics/{short_code}"]}

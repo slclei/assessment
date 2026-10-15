@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "checks": [
+    "two URLs receive distinct short codes",
+    "both short codes redirect to their destinations",
+    "malformed input rejected",
+    "unsafe URL rejected",
+    "unknown code returns 404",
+    "two URLs receive distinct short codes",
+    "both short codes redirect to their destinations",
+    "new links expire by default after 168 hours; overrides are bounded and expired redirects return 410",
+    "malformed input rejected",
+    "unsafe URL rejected",
+    "unknown code returns 404",
+    "two URLs receive distinct short codes",
+    "both short codes redirect to their destinations",
+    "malformed input rejected",
+    "unsafe URL rejected",
+    "unknown code returns 404"
+  ],
+  "validated_requirement_ids": [
+    "expiring_links",
+    "redirect_urls",
+    "shorten_urls"
+  ],
+  "implementation_sha256": "eaf4f3693c188c505e075b21f24e999ba1c71aa9744e9f91b8f5764392e703cc",
+  "requirement_reports": [
+    "acceptance_test_report_shorten_urls.json",
+    "acceptance_test_report_expiring_links.json",
+    "acceptance_test_report_redirect_urls.json"
+  ]
+}

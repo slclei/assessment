@@ -1,0 +1,7 @@
+{
+  "input_module": "D:\\LeiXU\\Job\\assignment\\agentic_sdlc_platform\\scenarios\\fixtures\\legacy_lookup.py",
+  "parsed": true,
+  "findings": [
+    "SQL injection risk: short_code is interpolated into SQL text."
+  ]
+}

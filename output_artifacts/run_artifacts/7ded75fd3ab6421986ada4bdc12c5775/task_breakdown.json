@@ -1,0 +1,141 @@
+{
+  "nodes": [
+    {
+      "id": "architecture",
+      "role": "architecture",
+      "requirement_ids": [
+        "shorten_urls",
+        "redirect_urls",
+        "click_analytics",
+        "custom_aliases",
+        "reliability_controls"
+      ],
+      "depends_on": [],
+      "artifact": "architecture.md"
+    },
+    {
+      "id": "implementation",
+      "role": "implementation",
+      "requirement_ids": [
+        "shorten_urls",
+        "redirect_urls",
+        "click_analytics",
+        "custom_aliases",
+        "reliability_controls"
+      ],
+      "depends_on": [
+        "architecture"
+      ],
+      "artifact": "generated_app.py"
+    },
+    {
+      "id": "verification_shorten_urls",
+      "role": "testing",
+      "requirement_ids": [
+        "shorten_urls"
+      ],
+      "depends_on": [
+        "implementation"
+      ],
+      "artifact": "acceptance_test_report_shorten_urls.json"
+    },
+    {
+      "id": "verification_redirect_urls",
+      "role": "testing",
+      "requirement_ids": [
+        "redirect_urls"
+      ],
+      "depends_on": [
+        "implementation"
+      ],
+      "artifact": "acceptance_test_report_redirect_urls.json"
+    },
+    {
+      "id": "verification_click_analytics",
+      "role": "testing",
+      "requirement_ids": [
+        "click_analytics"
+      ],
+      "depends_on": [
+        "implementation"
+      ],
+      "artifact": "acceptance_test_report_click_analytics.json"
+    },
+    {
+      "id": "verification_custom_aliases",
+      "role": "testing",
+      "requirement_ids": [
+        "custom_aliases"
+      ],
+      "depends_on": [
+        "implementation"
+      ],
+      "artifact": "acceptance_test_report_custom_aliases.json"
+    },
+    {
+      "id": "verification_reliability_controls",
+      "role": "testing",
+      "requirement_ids": [
+        "reliability_controls"
+      ],
+      "depends_on": [
+        "implementation"
+      ],
+      "artifact": "acceptance_test_report_reliability_controls.json"
+    },
+    {
+      "id": "documentation",
+      "role": "documentation",
+      "requirement_ids": [
+        "shorten_urls",
+        "redirect_urls",
+        "click_analytics",
+        "custom_aliases",
+        "reliability_controls"
+      ],
+      "depends_on": [
+        "architecture",
+        "implementation",
+        "verification_shorten_urls",
+        "verification_redirect_urls",
+        "verification_click_analytics",
+        "verification_custom_aliases",
+        "verification_reliability_controls"
+      ],
+      "artifact": "setup_and_operations.md"
+    },
+    {
+      "id": "release_readiness",
+      "role": "release",
+      "requirement_ids": [
+        "shorten_urls",
+        "redirect_urls",
+        "click_analytics",
+        "custom_aliases",
+        "reliability_controls"
+      ],
+      "depends_on": [
+        "verification_shorten_urls",
+        "verification_redirect_urls",
+        "verification_click_analytics",
+        "verification_custom_aliases",
+        "verification_reliability_controls",
+        "documentation"
+      ],
+      "artifact": "release_readiness.json"
+    }
+  ],
+  "entry_nodes": [
+    "architecture"
+  ],
+  "exit_nodes": [
+    "release_readiness"
+  ],
+  "requirement_ids": [
+    "shorten_urls",
+    "redirect_urls",
+    "click_analytics",
+    "custom_aliases",
+    "reliability_controls"
+  ]
+}

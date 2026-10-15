@@ -1,0 +1,105 @@
+{
+  "nodes": [
+    {
+      "id": "architecture",
+      "role": "architecture",
+      "requirement_ids": [
+        "shorten_urls",
+        "expiring_links",
+        "redirect_urls"
+      ],
+      "depends_on": [],
+      "artifact": "architecture.md"
+    },
+    {
+      "id": "implementation",
+      "role": "implementation",
+      "requirement_ids": [
+        "shorten_urls",
+        "expiring_links",
+        "redirect_urls"
+      ],
+      "depends_on": [
+        "architecture"
+      ],
+      "artifact": "generated_app.py"
+    },
+    {
+      "id": "verification_shorten_urls",
+      "role": "testing",
+      "requirement_ids": [
+        "shorten_urls"
+      ],
+      "depends_on": [
+        "implementation"
+      ],
+      "artifact": "acceptance_test_report_shorten_urls.json"
+    },
+    {
+      "id": "verification_expiring_links",
+      "role": "testing",
+      "requirement_ids": [
+        "expiring_links"
+      ],
+      "depends_on": [
+        "implementation"
+      ],
+      "artifact": "acceptance_test_report_expiring_links.json"
+    },
+    {
+      "id": "verification_redirect_urls",
+      "role": "testing",
+      "requirement_ids": [
+        "redirect_urls"
+      ],
+      "depends_on": [
+        "implementation"
+      ],
+      "artifact": "acceptance_test_report_redirect_urls.json"
+    },
+    {
+      "id": "documentation",
+      "role": "documentation",
+      "requirement_ids": [
+        "shorten_urls",
+        "expiring_links",
+        "redirect_urls"
+      ],
+      "depends_on": [
+        "architecture",
+        "implementation",
+        "verification_shorten_urls",
+        "verification_expiring_links",
+        "verification_redirect_urls"
+      ],
+      "artifact": "setup_and_operations.md"
+    },
+    {
+      "id": "release_readiness",
+      "role": "release",
+      "requirement_ids": [
+        "shorten_urls",
+        "expiring_links",
+        "redirect_urls"
+      ],
+      "depends_on": [
+        "verification_shorten_urls",
+        "verification_expiring_links",
+        "verification_redirect_urls",
+        "documentation"
+      ],
+      "artifact": "release_readiness.json"
+    }
+  ],
+  "entry_nodes": [
+    "architecture"
+  ],
+  "exit_nodes": [
+    "release_readiness"
+  ],
+  "requirement_ids": [
+    "shorten_urls",
+    "expiring_links",
+    "redirect_urls"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "run_id": "d5fa7a0238bc48d881babb6cf63bf0dc",
+  "passed": true,
+  "initial_expiration_hours": 24,
+  "revised_expiration_hours": 168,
+  "verified_expiry_values": [
+    24,
+    168
+  ],
+  "compensation_order": [
+    "release",
+    "verification"
+  ],
+  "revision_events": [
+    "REPLAN_COMPENSATED",
+    "REPLAN_COMPENSATED",
+    "OUTPUT_REVISED",
+    "REPLAN_INVALIDATED",
+    "REPLAN_INVALIDATED"
+  ],
+  "approvals": [
+    {
+      "event": "PENDING_APPROVAL",
+      "details": "\n[GOVERNANCE GATE] Review and authorize 'Revise upstream expiry requirement'.\nReview the seven-day lifetime change. Stale verification and release artifacts will be compensated and rerun.\nCompleted prerequisites:\n- Prepare release from verified policy: {'passed': True, 'default_expiration_hours': 24}\nApprove? (y/n): "
+    },
+    {
+      "event": "APPROVED",
+      "details": "Operator approved after reviewing the recorded change summary."
+    }
+  ],
+  "release_after_revision": null
+}

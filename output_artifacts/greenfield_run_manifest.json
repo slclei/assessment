@@ -1,0 +1,296 @@
+{
+  "run_id": "8ed2c6de73bb4f49b48f51814e82edc0",
+  "scenario": "Greenfield-URL-Shortener",
+  "started_at": 1792097599.703831,
+  "finished_at": 1792097599.869294,
+  "request": "Build a URL shortener with redirects and click analytics.",
+  "normalized_requirements": [
+    "shorten_urls",
+    "redirect_urls",
+    "click_analytics"
+  ],
+  "provider": null,
+  "inputs": {
+    "database_path": "urls.db"
+  },
+  "plan": [
+    {
+      "task_id": "2ffd9e17",
+      "name": "Normalize URL Shortener Spec",
+      "dependencies": []
+    },
+    {
+      "task_id": "7640258f",
+      "name": "Architecture Design",
+      "dependencies": [
+        "2ffd9e17"
+      ]
+    },
+    {
+      "task_id": "a77ae07f",
+      "name": "Parallel Server Implementation",
+      "dependencies": [
+        "7640258f"
+      ]
+    },
+    {
+      "task_id": "91734ef8",
+      "name": "Parallel SQLite Schema Gen",
+      "dependencies": [
+        "7640258f"
+      ]
+    },
+    {
+      "task_id": "6736cb9e",
+      "name": "Production Database Migration",
+      "dependencies": [
+        "a77ae07f",
+        "91734ef8"
+      ]
+    },
+    {
+      "task_id": "1414854e",
+      "name": "Validate Greenfield Artifacts",
+      "dependencies": [
+        "6736cb9e"
+      ]
+    },
+    {
+      "task_id": "cd4c41fc",
+      "name": "Generate Setup and Operations Documentation",
+      "dependencies": [
+        "1414854e"
+      ]
+    },
+    {
+      "task_id": "857df788",
+      "name": "Validate Release Readiness",
+      "dependencies": [
+        "cd4c41fc"
+      ]
+    }
+  ],
+  "approvals": [
+    {
+      "timestamp": 1792097599.736833,
+      "run_id": "8ed2c6de73bb4f49b48f51814e82edc0",
+      "scenario": "Greenfield-URL-Shortener",
+      "task_id": "6736cb9e",
+      "task_name": "Production Database Migration",
+      "status": "WAITING_APPROVAL",
+      "event": "PENDING_APPROVAL",
+      "details": "\n[GOVERNANCE GATE] Review and authorize 'Production Database Migration'.\nCreate only missing urls and click_events tables in urls.db. Existing tables and rows are preserved.\nCompleted prerequisites:\n- Parallel Server Implementation: 'Generated runnable URL shortener service implementation.'\n- Parallel SQLite Schema Gen: 'Generated SQLite database schema script.'\nApprove? (y/n): "
+    },
+    {
+      "timestamp": 1792097599.7398334,
+      "run_id": "8ed2c6de73bb4f49b48f51814e82edc0",
+      "scenario": "Greenfield-URL-Shortener",
+      "task_id": "6736cb9e",
+      "task_name": "Production Database Migration",
+      "status": "WAITING_APPROVAL",
+      "event": "APPROVED",
+      "details": "Operator approved after reviewing the recorded change summary."
+    }
+  ],
+  "task_trace": [
+    {
+      "task_id": "2ffd9e17",
+      "name": "Normalize URL Shortener Spec",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Build a URL shortener with redirects and click analytics."
+      },
+      "output": "Generated OpenAPI specification for URL shortener.",
+      "error": null
+    },
+    {
+      "task_id": "7640258f",
+      "name": "Architecture Design",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Build a URL shortener with redirects and click analytics.",
+        "spec": "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"URL Shortener API\",\n    \"version\": \"1.0.0\"\n  },\n  \"servers\": [\n    {\n      \"url\": \"http://localhost:8000\"\n    }\n  ],\n  \"paths\": {\n    \"/shorten\": {\n      \"post\": {\n        \"operationId\": \"createShortUrl\",\n        \"requestBody\": {\n          \"required\": true,\n          \"content\": {\n            \"application/json\": {\n              \"schema\": {\n                \"$ref\": \"#/components/schemas/ShortenRequest\"\n              }\n            }\n          }\n        },\n        \"responses\": {\n          \"201\": {\n            \"description\": \"Short URL created.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ShortenResponse\"\n                }\n              }\n            }\n          },\n          \"400\": {\n            \"description\": \"Invalid request.\"\n          },\n          \"409\": {\n            \"description\": \"Custom alias already exists.\"\n          },\n          \"413\": {\n            \"description\": \"Request body is too large.\"\n          },\n          \"503\": {\n            \"description\": \"Short-code allocation failed.\"\n          }\n        }\n      }\n    },\n    \"/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"redirectShortUrl\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"302\": {\n            \"description\": \"Redirect to the original URL.\",\n            \"headers\": {\n              \"Location\": {\n                \"schema\": {\n                  \"type\": \"string\",\n                  \"format\": \"uri\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    },\n    \"/analytics/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"getShortUrlAnalytics\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"200\": {\n            \"description\": \"Aggregate click analytics.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ClickAnalytics\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"ShortenRequest\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"long_url\"\n        ],\n        \"properties\": {\n          \"long_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\",\n            \"maxLength\": 2048\n          },\n          \"custom_alias\": {\n            \"type\": \"string\",\n            \"pattern\": \"^[A-Za-z0-9_-]{1,32}$\"\n          }\n        }\n      },\n      \"ShortenResponse\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"short_url\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"short_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\"\n          }\n        }\n      },\n      \"ClickAnalytics\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"click_count\",\n          \"last_clicked_at\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"click_count\": {\n            \"type\": \"integer\",\n            \"minimum\": 0\n          },\n          \"last_clicked_at\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          }\n        }\n      }\n    }\n  }\n}"
+      },
+      "output": "output_artifacts/architecture.md",
+      "error": null
+    },
+    {
+      "task_id": "a77ae07f",
+      "name": "Parallel Server Implementation",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Build a URL shortener with redirects and click analytics.",
+        "spec": "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"URL Shortener API\",\n    \"version\": \"1.0.0\"\n  },\n  \"servers\": [\n    {\n      \"url\": \"http://localhost:8000\"\n    }\n  ],\n  \"paths\": {\n    \"/shorten\": {\n      \"post\": {\n        \"operationId\": \"createShortUrl\",\n        \"requestBody\": {\n          \"required\": true,\n          \"content\": {\n            \"application/json\": {\n              \"schema\": {\n                \"$ref\": \"#/components/schemas/ShortenRequest\"\n              }\n            }\n          }\n        },\n        \"responses\": {\n          \"201\": {\n            \"description\": \"Short URL created.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ShortenResponse\"\n                }\n              }\n            }\n          },\n          \"400\": {\n            \"description\": \"Invalid request.\"\n          },\n          \"409\": {\n            \"description\": \"Custom alias already exists.\"\n          },\n          \"413\": {\n            \"description\": \"Request body is too large.\"\n          },\n          \"503\": {\n            \"description\": \"Short-code allocation failed.\"\n          }\n        }\n      }\n    },\n    \"/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"redirectShortUrl\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"302\": {\n            \"description\": \"Redirect to the original URL.\",\n            \"headers\": {\n              \"Location\": {\n                \"schema\": {\n                  \"type\": \"string\",\n                  \"format\": \"uri\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    },\n    \"/analytics/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"getShortUrlAnalytics\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"200\": {\n            \"description\": \"Aggregate click analytics.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ClickAnalytics\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"ShortenRequest\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"long_url\"\n        ],\n        \"properties\": {\n          \"long_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\",\n            \"maxLength\": 2048\n          },\n          \"custom_alias\": {\n            \"type\": \"string\",\n            \"pattern\": \"^[A-Za-z0-9_-]{1,32}$\"\n          }\n        }\n      },\n      \"ShortenResponse\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"short_url\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"short_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\"\n          }\n        }\n      },\n      \"ClickAnalytics\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"click_count\",\n          \"last_clicked_at\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"click_count\": {\n            \"type\": \"integer\",\n            \"minimum\": 0\n          },\n          \"last_clicked_at\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          }\n        }\n      }\n    }\n  }\n}"
+      },
+      "output": "Generated runnable URL shortener service implementation.",
+      "error": null
+    },
+    {
+      "task_id": "91734ef8",
+      "name": "Parallel SQLite Schema Gen",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Build a URL shortener with redirects and click analytics.",
+        "spec": "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"URL Shortener API\",\n    \"version\": \"1.0.0\"\n  },\n  \"servers\": [\n    {\n      \"url\": \"http://localhost:8000\"\n    }\n  ],\n  \"paths\": {\n    \"/shorten\": {\n      \"post\": {\n        \"operationId\": \"createShortUrl\",\n        \"requestBody\": {\n          \"required\": true,\n          \"content\": {\n            \"application/json\": {\n              \"schema\": {\n                \"$ref\": \"#/components/schemas/ShortenRequest\"\n              }\n            }\n          }\n        },\n        \"responses\": {\n          \"201\": {\n            \"description\": \"Short URL created.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ShortenResponse\"\n                }\n              }\n            }\n          },\n          \"400\": {\n            \"description\": \"Invalid request.\"\n          },\n          \"409\": {\n            \"description\": \"Custom alias already exists.\"\n          },\n          \"413\": {\n            \"description\": \"Request body is too large.\"\n          },\n          \"503\": {\n            \"description\": \"Short-code allocation failed.\"\n          }\n        }\n      }\n    },\n    \"/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"redirectShortUrl\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"302\": {\n            \"description\": \"Redirect to the original URL.\",\n            \"headers\": {\n              \"Location\": {\n                \"schema\": {\n                  \"type\": \"string\",\n                  \"format\": \"uri\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    },\n    \"/analytics/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"getShortUrlAnalytics\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"200\": {\n            \"description\": \"Aggregate click analytics.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ClickAnalytics\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"ShortenRequest\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"long_url\"\n        ],\n        \"properties\": {\n          \"long_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\",\n            \"maxLength\": 2048\n          },\n          \"custom_alias\": {\n            \"type\": \"string\",\n            \"pattern\": \"^[A-Za-z0-9_-]{1,32}$\"\n          }\n        }\n      },\n      \"ShortenResponse\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"short_url\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"short_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\"\n          }\n        }\n      },\n      \"ClickAnalytics\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"click_count\",\n          \"last_clicked_at\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"click_count\": {\n            \"type\": \"integer\",\n            \"minimum\": 0\n          },\n          \"last_clicked_at\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          }\n        }\n      }\n    }\n  }\n}"
+      },
+      "output": "Generated SQLite database schema script.",
+      "error": null
+    },
+    {
+      "task_id": "6736cb9e",
+      "name": "Production Database Migration",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Build a URL shortener with redirects and click analytics.",
+        "spec": "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"URL Shortener API\",\n    \"version\": \"1.0.0\"\n  },\n  \"servers\": [\n    {\n      \"url\": \"http://localhost:8000\"\n    }\n  ],\n  \"paths\": {\n    \"/shorten\": {\n      \"post\": {\n        \"operationId\": \"createShortUrl\",\n        \"requestBody\": {\n          \"required\": true,\n          \"content\": {\n            \"application/json\": {\n              \"schema\": {\n                \"$ref\": \"#/components/schemas/ShortenRequest\"\n              }\n            }\n          }\n        },\n        \"responses\": {\n          \"201\": {\n            \"description\": \"Short URL created.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ShortenResponse\"\n                }\n              }\n            }\n          },\n          \"400\": {\n            \"description\": \"Invalid request.\"\n          },\n          \"409\": {\n            \"description\": \"Custom alias already exists.\"\n          },\n          \"413\": {\n            \"description\": \"Request body is too large.\"\n          },\n          \"503\": {\n            \"description\": \"Short-code allocation failed.\"\n          }\n        }\n      }\n    },\n    \"/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"redirectShortUrl\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"302\": {\n            \"description\": \"Redirect to the original URL.\",\n            \"headers\": {\n              \"Location\": {\n                \"schema\": {\n                  \"type\": \"string\",\n                  \"format\": \"uri\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    },\n    \"/analytics/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"getShortUrlAnalytics\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"200\": {\n            \"description\": \"Aggregate click analytics.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ClickAnalytics\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"ShortenRequest\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"long_url\"\n        ],\n        \"properties\": {\n          \"long_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\",\n            \"maxLength\": 2048\n          },\n          \"custom_alias\": {\n            \"type\": \"string\",\n            \"pattern\": \"^[A-Za-z0-9_-]{1,32}$\"\n          }\n        }\n      },\n      \"ShortenResponse\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"short_url\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"short_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\"\n          }\n        }\n      },\n      \"ClickAnalytics\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"click_count\",\n          \"last_clicked_at\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"click_count\": {\n            \"type\": \"integer\",\n            \"minimum\": 0\n          },\n          \"last_clicked_at\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          }\n        }\n      }\n    }\n  }\n}"
+      },
+      "output": {
+        "created_tables": []
+      },
+      "error": null
+    },
+    {
+      "task_id": "1414854e",
+      "name": "Validate Greenfield Artifacts",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Build a URL shortener with redirects and click analytics.",
+        "spec": "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"URL Shortener API\",\n    \"version\": \"1.0.0\"\n  },\n  \"servers\": [\n    {\n      \"url\": \"http://localhost:8000\"\n    }\n  ],\n  \"paths\": {\n    \"/shorten\": {\n      \"post\": {\n        \"operationId\": \"createShortUrl\",\n        \"requestBody\": {\n          \"required\": true,\n          \"content\": {\n            \"application/json\": {\n              \"schema\": {\n                \"$ref\": \"#/components/schemas/ShortenRequest\"\n              }\n            }\n          }\n        },\n        \"responses\": {\n          \"201\": {\n            \"description\": \"Short URL created.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ShortenResponse\"\n                }\n              }\n            }\n          },\n          \"400\": {\n            \"description\": \"Invalid request.\"\n          },\n          \"409\": {\n            \"description\": \"Custom alias already exists.\"\n          },\n          \"413\": {\n            \"description\": \"Request body is too large.\"\n          },\n          \"503\": {\n            \"description\": \"Short-code allocation failed.\"\n          }\n        }\n      }\n    },\n    \"/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"redirectShortUrl\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"302\": {\n            \"description\": \"Redirect to the original URL.\",\n            \"headers\": {\n              \"Location\": {\n                \"schema\": {\n                  \"type\": \"string\",\n                  \"format\": \"uri\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    },\n    \"/analytics/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"getShortUrlAnalytics\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"200\": {\n            \"description\": \"Aggregate click analytics.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ClickAnalytics\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"ShortenRequest\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"long_url\"\n        ],\n        \"properties\": {\n          \"long_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\",\n            \"maxLength\": 2048\n          },\n          \"custom_alias\": {\n            \"type\": \"string\",\n            \"pattern\": \"^[A-Za-z0-9_-]{1,32}$\"\n          }\n        }\n      },\n      \"ShortenResponse\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"short_url\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"short_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\"\n          }\n        }\n      },\n      \"ClickAnalytics\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"click_count\",\n          \"last_clicked_at\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"click_count\": {\n            \"type\": \"integer\",\n            \"minimum\": 0\n          },\n          \"last_clicked_at\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          }\n        }\n      }\n    }\n  }\n}",
+        "greenfield_created_tables": []
+      },
+      "output": {
+        "passed": true,
+        "checks": [
+          "syntax",
+          "API specification",
+          "schema",
+          "shorten",
+          "unique codes",
+          "redirects",
+          "analytics",
+          "404"
+        ]
+      },
+      "error": null
+    },
+    {
+      "task_id": "cd4c41fc",
+      "name": "Generate Setup and Operations Documentation",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Build a URL shortener with redirects and click analytics.",
+        "spec": "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"URL Shortener API\",\n    \"version\": \"1.0.0\"\n  },\n  \"servers\": [\n    {\n      \"url\": \"http://localhost:8000\"\n    }\n  ],\n  \"paths\": {\n    \"/shorten\": {\n      \"post\": {\n        \"operationId\": \"createShortUrl\",\n        \"requestBody\": {\n          \"required\": true,\n          \"content\": {\n            \"application/json\": {\n              \"schema\": {\n                \"$ref\": \"#/components/schemas/ShortenRequest\"\n              }\n            }\n          }\n        },\n        \"responses\": {\n          \"201\": {\n            \"description\": \"Short URL created.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ShortenResponse\"\n                }\n              }\n            }\n          },\n          \"400\": {\n            \"description\": \"Invalid request.\"\n          },\n          \"409\": {\n            \"description\": \"Custom alias already exists.\"\n          },\n          \"413\": {\n            \"description\": \"Request body is too large.\"\n          },\n          \"503\": {\n            \"description\": \"Short-code allocation failed.\"\n          }\n        }\n      }\n    },\n    \"/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"redirectShortUrl\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"302\": {\n            \"description\": \"Redirect to the original URL.\",\n            \"headers\": {\n              \"Location\": {\n                \"schema\": {\n                  \"type\": \"string\",\n                  \"format\": \"uri\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    },\n    \"/analytics/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"getShortUrlAnalytics\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"200\": {\n            \"description\": \"Aggregate click analytics.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ClickAnalytics\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"ShortenRequest\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"long_url\"\n        ],\n        \"properties\": {\n          \"long_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\",\n            \"maxLength\": 2048\n          },\n          \"custom_alias\": {\n            \"type\": \"string\",\n            \"pattern\": \"^[A-Za-z0-9_-]{1,32}$\"\n          }\n        }\n      },\n      \"ShortenResponse\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"short_url\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"short_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\"\n          }\n        }\n      },\n      \"ClickAnalytics\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"click_count\",\n          \"last_clicked_at\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"click_count\": {\n            \"type\": \"integer\",\n            \"minimum\": 0\n          },\n          \"last_clicked_at\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          }\n        }\n      }\n    }\n  }\n}",
+        "greenfield_created_tables": []
+      },
+      "output": "output_artifacts/setup_and_operations.md",
+      "error": null
+    },
+    {
+      "task_id": "857df788",
+      "name": "Validate Release Readiness",
+      "status": "COMPLETED",
+      "inputs": {
+        "request": "Build a URL shortener with redirects and click analytics.",
+        "spec": "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"URL Shortener API\",\n    \"version\": \"1.0.0\"\n  },\n  \"servers\": [\n    {\n      \"url\": \"http://localhost:8000\"\n    }\n  ],\n  \"paths\": {\n    \"/shorten\": {\n      \"post\": {\n        \"operationId\": \"createShortUrl\",\n        \"requestBody\": {\n          \"required\": true,\n          \"content\": {\n            \"application/json\": {\n              \"schema\": {\n                \"$ref\": \"#/components/schemas/ShortenRequest\"\n              }\n            }\n          }\n        },\n        \"responses\": {\n          \"201\": {\n            \"description\": \"Short URL created.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ShortenResponse\"\n                }\n              }\n            }\n          },\n          \"400\": {\n            \"description\": \"Invalid request.\"\n          },\n          \"409\": {\n            \"description\": \"Custom alias already exists.\"\n          },\n          \"413\": {\n            \"description\": \"Request body is too large.\"\n          },\n          \"503\": {\n            \"description\": \"Short-code allocation failed.\"\n          }\n        }\n      }\n    },\n    \"/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"redirectShortUrl\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"302\": {\n            \"description\": \"Redirect to the original URL.\",\n            \"headers\": {\n              \"Location\": {\n                \"schema\": {\n                  \"type\": \"string\",\n                  \"format\": \"uri\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    },\n    \"/analytics/{short_code}\": {\n      \"get\": {\n        \"operationId\": \"getShortUrlAnalytics\",\n        \"parameters\": [\n          {\n            \"name\": \"short_code\",\n            \"in\": \"path\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\",\n              \"pattern\": \"^[A-Za-z0-9_-]{1,64}$\"\n            }\n          }\n        ],\n        \"responses\": {\n          \"200\": {\n            \"description\": \"Aggregate click analytics.\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/ClickAnalytics\"\n                }\n              }\n            }\n          },\n          \"404\": {\n            \"description\": \"Short URL not found.\"\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"ShortenRequest\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"long_url\"\n        ],\n        \"properties\": {\n          \"long_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\",\n            \"maxLength\": 2048\n          },\n          \"custom_alias\": {\n            \"type\": \"string\",\n            \"pattern\": \"^[A-Za-z0-9_-]{1,32}$\"\n          }\n        }\n      },\n      \"ShortenResponse\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"short_url\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"short_url\": {\n            \"type\": \"string\",\n            \"format\": \"uri\"\n          }\n        }\n      },\n      \"ClickAnalytics\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"short_code\",\n          \"click_count\",\n          \"last_clicked_at\"\n        ],\n        \"properties\": {\n          \"short_code\": {\n            \"type\": \"string\"\n          },\n          \"click_count\": {\n            \"type\": \"integer\",\n            \"minimum\": 0\n          },\n          \"last_clicked_at\": {\n            \"type\": [\n              \"string\",\n              \"null\"\n            ]\n          }\n        }\n      }\n    }\n  }\n}",
+        "greenfield_created_tables": []
+      },
+      "output": {
+        "passed": true,
+        "validated_artifacts": [
+          "output_artifacts/openapi.json",
+          "output_artifacts/main.py",
+          "output_artifacts/schema.sql",
+          "output_artifacts/architecture.md",
+          "output_artifacts/setup_and_operations.md",
+          "output_artifacts/greenfield_validation.json"
+        ]
+      },
+      "error": null
+    }
+  ],
+  "code_changes": [
+    {
+      "path": "main.py",
+      "snapshot_path": "run_artifacts\\8ed2c6de73bb4f49b48f51814e82edc0\\main.py",
+      "sha256": "e3d900d70a289669edae766dd574d153627d741e02588435ad8808774b46806d"
+    },
+    {
+      "path": "schema.sql",
+      "snapshot_path": "run_artifacts\\8ed2c6de73bb4f49b48f51814e82edc0\\schema.sql",
+      "sha256": "9fecf23c1712fbd47ac977921ee6e3e73c7601e1df07f59421de2c99860fec25"
+    }
+  ],
+  "test_results": [
+    {
+      "path": "greenfield_validation.json",
+      "result": {
+        "passed": true,
+        "checks": [
+          "syntax",
+          "API specification",
+          "schema",
+          "shorten",
+          "unique codes",
+          "redirects",
+          "analytics",
+          "404"
+        ]
+      }
+    }
+  ],
+  "final_decision": {
+    "passed": true,
+    "success": true
+  },
+  "metrics": {
+    "run_id": "8ed2c6de73bb4f49b48f51814e82edc0",
+    "scenario": "Greenfield-URL-Shortener",
+    "end_to_end_latency_sec": 0.1657,
+    "total_retries": 0,
+    "total_rollbacks": 0,
+    "mttr_sec": null,
+    "failure_timestamp": null,
+    "recovery_timestamp": null,
+    "success": true,
+    "recorded_runs": 2,
+    "successful_runs": 1,
+    "success_rate_percentage": 50.0
+  },
+  "artifacts": [
+    {
+      "path": "architecture.md",
+      "snapshot_path": "run_artifacts\\8ed2c6de73bb4f49b48f51814e82edc0\\architecture.md",
+      "sha256": "f894ff642d9d49d7512ab34222539bf7612f51e003c81a03cac255c8650c7681"
+    },
+    {
+      "path": "greenfield_validation.json",
+      "snapshot_path": "run_artifacts\\8ed2c6de73bb4f49b48f51814e82edc0\\greenfield_validation.json",
+      "sha256": "5c08f72aab4753f8c67f839bd6d8cbe6845a7688687318f9fbe8a9b990548d0e"
+    },
+    {
+      "path": "main.py",
+      "snapshot_path": "run_artifacts\\8ed2c6de73bb4f49b48f51814e82edc0\\main.py",
+      "sha256": "e3d900d70a289669edae766dd574d153627d741e02588435ad8808774b46806d"
+    },
+    {
+      "path": "openapi.json",
+      "snapshot_path": "run_artifacts\\8ed2c6de73bb4f49b48f51814e82edc0\\openapi.json",
+      "sha256": "3fa9354254581f83c49cbe30ce17055f62c6624de1dbff9300808e6a5cb50e03"
+    },
+    {
+      "path": "release_readiness.json",
+      "snapshot_path": "run_artifacts\\8ed2c6de73bb4f49b48f51814e82edc0\\release_readiness.json",
+      "sha256": "a80cdb34eb07bf8431a1e233fca3f320b3fdca3c091d70a2023f426ad9d24c23"
+    },
+    {
+      "path": "schema.sql",
+      "snapshot_path": "run_artifacts\\8ed2c6de73bb4f49b48f51814e82edc0\\schema.sql",
+      "sha256": "9fecf23c1712fbd47ac977921ee6e3e73c7601e1df07f59421de2c99860fec25"
+    },
+    {
+      "path": "setup_and_operations.md",
+      "snapshot_path": "run_artifacts\\8ed2c6de73bb4f49b48f51814e82edc0\\setup_and_operations.md",
+      "sha256": "786c7aaf08db8d8884f5e510f7bd3b7a283432b57c9dea98b98b57763f3f43e5"
+    }
+  ]
+}

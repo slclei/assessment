@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "checks": [
+    "two URLs receive distinct short codes",
+    "both short codes redirect to their destinations",
+    "malformed input rejected",
+    "unsafe URL rejected",
+    "unknown code returns 404"
+  ],
+  "validated_requirement_ids": [
+    "redirect_urls"
+  ],
+  "implementation_sha256": "eaf4f3693c188c505e075b21f24e999ba1c71aa9744e9f91b8f5764392e703cc"
+}

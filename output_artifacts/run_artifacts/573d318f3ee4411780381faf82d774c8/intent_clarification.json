@@ -1,0 +1,41 @@
+{
+  "raw_prompt": "Build a resilient URL shortener with redirects, click analytics, and custom aliases.",
+  "requirements": [
+    {
+      "id": "shorten_urls",
+      "description": "Create unique short codes for valid URLs.",
+      "supported": true
+    },
+    {
+      "id": "redirect_urls",
+      "description": "Resolve known short codes to their destination URLs.",
+      "supported": true
+    },
+    {
+      "id": "click_analytics",
+      "description": "Record and report aggregate link usage.",
+      "supported": true
+    },
+    {
+      "id": "custom_aliases",
+      "description": "Support user-selected short codes subject to collision checks.",
+      "supported": true
+    },
+    {
+      "id": "reliability_controls",
+      "description": "Use bounded short-code collision retries and request-size limits; no high-availability guarantee is claimed.",
+      "supported": true
+    }
+  ],
+  "unsupported_requirements": [],
+  "unresolved_questions": [
+    "What retention period should apply to analytics data?",
+    "Are aliases globally unique or scoped to individual users?",
+    "What availability target and recovery objective should the service meet?"
+  ],
+  "assumptions": [
+    "Collect aggregate counts only until a retention policy is approved.",
+    "Require globally unique aliases for the initial design.",
+    "Validate local failure controls only; do not claim high availability until an SLO and deployment design are approved."
+  ]
+}

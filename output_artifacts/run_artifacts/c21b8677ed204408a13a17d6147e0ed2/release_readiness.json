@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "validated_artifacts": [
+    "output_artifacts/openapi.json",
+    "output_artifacts/main.py",
+    "output_artifacts/schema.sql",
+    "output_artifacts/architecture.md",
+    "output_artifacts/setup_and_operations.md",
+    "output_artifacts/greenfield_validation.json"
+  ]
+}

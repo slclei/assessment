@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": [
+    "two URLs receive distinct short codes",
+    "both short codes redirect to their destinations",
+    "collision retries recover and oversized requests are rejected",
+    "malformed input rejected",
+    "unsafe URL rejected",
+    "unknown code returns 404"
+  ],
+  "validated_requirement_ids": [
+    "reliability_controls"
+  ],
+  "implementation_sha256": "74b50e6f2bc5591eeb84650b118af48f4569738e4ad21f20c4e82962e1aac64e"
+}

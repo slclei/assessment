@@ -1,0 +1,62 @@
+{
+  "passed": true,
+  "requirement_count": 3,
+  "validated_requirement_ids": [
+    "expiring_links",
+    "redirect_urls",
+    "shorten_urls"
+  ],
+  "checks": [
+    "plan graph valid",
+    "requirements covered",
+    "architecture documented",
+    "acceptance tests executed",
+    "operations documented"
+  ],
+  "test_result": {
+    "passed": true,
+    "checks": [
+      "two URLs receive distinct short codes",
+      "both short codes redirect to their destinations",
+      "malformed input rejected",
+      "unsafe URL rejected",
+      "unknown code returns 404",
+      "two URLs receive distinct short codes",
+      "both short codes redirect to their destinations",
+      "new links expire by default after 168 hours; overrides are bounded and expired redirects return 410",
+      "malformed input rejected",
+      "unsafe URL rejected",
+      "unknown code returns 404",
+      "two URLs receive distinct short codes",
+      "both short codes redirect to their destinations",
+      "malformed input rejected",
+      "unsafe URL rejected",
+      "unknown code returns 404"
+    ],
+    "validated_requirement_ids": [
+      "expiring_links",
+      "redirect_urls",
+      "shorten_urls"
+    ],
+    "implementation_sha256": "eaf4f3693c188c505e075b21f24e999ba1c71aa9744e9f91b8f5764392e703cc",
+    "requirement_reports": [
+      "acceptance_test_report_shorten_urls.json",
+      "acceptance_test_report_expiring_links.json",
+      "acceptance_test_report_redirect_urls.json"
+    ]
+  },
+  "validated_artifacts": [
+    "architecture.md",
+    "generated_app.py",
+    "acceptance_test_report_shorten_urls.json",
+    "acceptance_test_report_expiring_links.json",
+    "acceptance_test_report_redirect_urls.json",
+    "setup_and_operations.md",
+    "implementation.diff"
+  ],
+  "review_diff": {
+    "path": "implementation.diff",
+    "preview": "--- src/url_shortener.py\n+++ generated_app.py\n@@ -7,113 +7,60 @@\n from functools import lru_cache\n from urllib.parse import urlsplit\n from wsgiref.simple_server import make_server\n-\n-\n-SCHEMA_SQL = \"\"\"\\\n-CREATE TABLE IF NOT EXISTS urls (\n-    id INTEGER PRIMARY KEY AUTOINCREMENT,\n-    short_code TEXT UNIQUE NOT NULL,\n-    long_url TEXT NOT NULL,\n-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n-    expires_at TEXT\n-);\n-CREATE TABLE IF NOT EXISTS click_events (\n-    id INTEGER PRIMARY KEY AUTOINCREMENT,\n-    short_code TEXT NOT NULL REFERENCES urls(short_code) ON DELETE CASCADE,\n-    clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n-);\n-\"\"\"\n-\n+SCHEMA_SQL = 'CREATE TABLE IF NOT EXISTS urls (\\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\\n    short_code TEXT UNIQUE NOT NULL,\\n    long_url TEXT NOT NULL,\\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\\n    expires_at TEXT\\n);\\nCREATE TABLE IF NOT EXISTS click_events (\\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\\n    short_code TEXT NOT NULL REFERENCES urls(short_code) ON DELETE CASCADE,\\n    clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\\n);\\n'\n \n def _is_valid_url(value):\n-    if not isinstance(value, str) or not value or value != value.strip() or len(value) > 2048:\n+    if not isinstance(value, str) or not value or value != value.strip() or (len(value) > 2048):\n         return False\n-    if any(ord(character) < 32 for character in value):\n+    if any((ord(character) < 32 for character in value)):\n         return False\n     try:\n         parsed = urlsplit(value)\n-        return (\n-            parsed.scheme.lower() in {\"http\", \"https\"}\n-            and bool(parsed.hostname)\n-            and parsed.username is None\n-            and parsed.password is None\n-            and (parsed.port is None or 1 <= parsed.port <= 65535)\n-        )\n+        return parsed.scheme.lower() in {'http', 'https'} and bool(parsed.hostname) and (parsed.username is None) and (parsed.password is None) and (parsed.port is None or 1 <= parsed.port <= 65535)\n     except ValueError:\n         return False\n \n-\n def _json_response(start_response, status, payload):\n-    body = json.dumps(payload).encode(\"utf-8\")\n-    start_response(status, [\n-        (\"Content-Type\", \"application/json; charset=utf-8\"),\n-        (\"Content-Length\", str(len(body))),\n-    ])\n+    body = json.dumps(payload).encode('utf-8')\n+    start_response(status, [('Content-Type', 'application/json; charset=utf-8'), ('Content-Length', str(len(body)))])\n     return [body]\n-\n \n def _normalize_expiration(value, max_lifetime_hours):\n     if not isinstance(value, str) or len(value) > 64:\n-        raise ValueError(\"expires_at must be an ISO-8601 timestamp with a timezone\")\n+        raise ValueError('expires_at must be an ISO-8601 timestamp with a timezone')\n     try:\n-        expiration = datetime.fromisoformat(value.replace(\"Z\", \"+00:00\"))\n+        expiration = datetime.fromisoformat(value.replace('Z', '+00:00'))\n     except ValueError as error:\n-        raise ValueError(",
+    "truncated": true
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "prompt": "Set the default lifetime to 7 days for new links in my URL shortener.",
+  "requirement_count": 3,
+  "validated_artifacts": [
+    "intent_clarification.json",
+    "task_breakdown.json",
+    "stakeholder_approval.json",
+    "acceptance_test_report.json",
+    "architecture.md",
+    "generated_app.py",
+    "acceptance_test_report_shorten_urls.json",
+    "acceptance_test_report_expiring_links.json",
+    "acceptance_test_report_redirect_urls.json",
+    "setup_and_operations.md"
+  ]
+}
